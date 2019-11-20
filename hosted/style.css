@@ -1,0 +1,59 @@
+body{
+    background-color: #CCAD00;
+    color: #807226;
+}
+
+.gridTile {
+    background-color: #FFD801;
+    border: 1px solid #806C00;
+    height: 8rem;
+    color: black;
+    font-size: 1.2rem;
+}
+
+.gridTile:hover {
+    background-color: rgb(255, 237, 136);
+}
+
+nav {
+    background-color: #806C00;
+    padding: 1%;
+    margin-bottom: 2%;
+}
+.navlink a{
+    color: black;
+    font-size: 1.2rem;
+    text-decoration: none;
+}
+
+.navlink a:hover{
+    color: white;
+}
+
+.mainForm {
+    color: black;
+    font-size: 1.2rem;
+}
+
+.itemList {
+    margin-top: 1%;
+}
+
+.inventoryItem {
+    border: 2px solid #806C00;
+    padding-bottom: 1%;
+    padding-top: 1%;
+    background-color: #807226;
+    color: white;
+}
+
+.formSubmit {
+    background-color: #806C00;
+    border: 1px solid black;
+    color: white;
+}
+
+.formSubmit:hover {
+    color: #806C00;
+    background-color: white;
+}
