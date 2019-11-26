@@ -17,7 +17,7 @@ const router = (app) => {
     mid.requiresSecure,
     mid.requiresLogout,
     controllers.Account.changePassword
-    );
+  );
 };
 
 module.exports = router;

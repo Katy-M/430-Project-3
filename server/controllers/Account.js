@@ -15,7 +15,7 @@ const login = (request, response) => {
   const req = request;
   const res = response;
 
-    // force cast to strings
+  // force cast to strings
   const username = `${req.body.username}`;
   const password = `${req.body.pass}`;
 
@@ -38,7 +38,7 @@ const signup = (request, response) => {
   const req = request;
   const res = response;
 
-    // cast to strings
+  // cast to strings
   req.body.username = `${req.body.username}`;
   req.body.pass = `${req.body.pass}`;
   req.body.pass2 = `${req.body.pass2}`;
@@ -82,7 +82,7 @@ const changePassword = (request, response) => {
   const req = request;
   const res = response;
 
-    // cast to strings
+  // cast to strings
   req.body.username = `${req.body.username}`;
   req.body.pass = `${req.body.pass}`;
   req.body.pass2 = `${req.body.pass2}`;

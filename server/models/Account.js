@@ -28,6 +28,10 @@ const AccountSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  lastLoginDate: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 AccountSchema.statics.toAPI = doc => ({
@@ -55,6 +59,8 @@ AccountSchema.statics.findByUsername = (name, callback) => {
   return AccountModel.findOne(search, callback);
 };
 
+AccountSchema.statics.getLastLoginDate = (doc) => doc.lastLoginDate;
+
 AccountSchema.statics.generateHash = (password, callback) => {
   const salt = crypto.randomBytes(saltLength);
 
@@ -64,23 +70,23 @@ AccountSchema.statics.generateHash = (password, callback) => {
 };
 
 AccountSchema.statics.authenticate = (username, password, callback) =>
-AccountModel.findByUsername(username, (err, doc) => {
-  if (err) {
-    return callback(err);
-  }
-
-  if (!doc) {
-    return callback();
-  }
-
-  return validatePassword(doc, password, (result) => {
-    if (result === true) {
-      return callback(null, doc);
+  AccountModel.findByUsername(username, (err, doc) => {
+    if (err) {
+      return callback(err);
     }
 
-    return callback();
+    if (!doc) {
+      return callback();
+    }
+
+    return validatePassword(doc, password, (result) => {
+      if (result === true) {
+        return callback(null, doc);
+      }
+
+      return callback();
+    });
   });
-});
 
 AccountModel = mongoose.model('Account', AccountSchema);
 
