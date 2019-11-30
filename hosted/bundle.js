@@ -60,11 +60,21 @@ var GridTile = function (_React$Component) {
         value: function render() {
             return React.createElement(
                 'div',
-                { className: 'gridTile col-lg-4 col-md-4 col-sm-4 col-4', onClick: this.handleClick },
+                { className: 'gridTile row content-justify-center', onClick: this.handleClick },
                 React.createElement(
-                    'p',
-                    { className: 'label' },
+                    'div',
+                    { className: 'icon col-lg-2 col-md-2 col-sm-2 col-2' },
+                    'icon'
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'label col-lg-8 col-md-8 col-sm-8 col-8' },
                     this.state.hasTreasure.name
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'value col-lg-2 col-md-2 col-sm-2 col-2' },
+                    this.state.hasTreasure.value
                 )
             );
         }
@@ -81,27 +91,9 @@ var Grid = function Grid(props) {
     return React.createElement(
         'div',
         { className: 'gridContainer container' },
-        React.createElement(
-            'div',
-            { className: 'row content-justify-center' },
-            React.createElement(GridTile, { treasure: props.treasArray[0], csrf: props.csrf }),
-            React.createElement(GridTile, { treasure: props.treasArray[1], csrf: props.csrf }),
-            React.createElement(GridTile, { treasure: props.treasArray[2], csrf: props.csrf })
-        ),
-        React.createElement(
-            'div',
-            { className: 'row content-justify-center' },
-            React.createElement(GridTile, { treasure: props.treasArray[3], csrf: props.csrf }),
-            React.createElement(GridTile, { treasure: props.treasArray[4], csrf: props.csrf }),
-            React.createElement(GridTile, { treasure: props.treasArray[5], csrf: props.csrf })
-        ),
-        React.createElement(
-            'div',
-            { className: 'row content-justify-center' },
-            React.createElement(GridTile, { treasure: props.treasArray[6], csrf: props.csrf }),
-            React.createElement(GridTile, { treasure: props.treasArray[7], csrf: props.csrf }),
-            React.createElement(GridTile, { treasure: props.treasArray[8], csrf: props.csrf })
-        )
+        React.createElement(GridTile, { treasure: props.treasArray[0], csrf: props.csrf }),
+        React.createElement(GridTile, { treasure: props.treasArray[1], csrf: props.csrf }),
+        React.createElement(GridTile, { treasure: props.treasArray[2], csrf: props.csrf })
     );
 };
 
