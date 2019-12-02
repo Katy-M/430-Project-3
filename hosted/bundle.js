@@ -23,8 +23,7 @@ var GridTile = function (_React$Component) {
         var _this = _possibleConstructorReturn(this, (GridTile.__proto__ || Object.getPrototypeOf(GridTile)).call(this, props));
 
         _this.state = {
-            hasTreasure: props.treasure, // stores the NAME of the treasure on the tile. Empty == ""
-            // hasPlayer: props.hasPlayer
+            hasTreasure: props.treasure, // stores the NAME of the treasure
             _csrf: props.csrf
         };
 
@@ -42,7 +41,7 @@ var GridTile = function (_React$Component) {
                 return false;
             }
 
-            // if there is treasure, tell server to create an instance of it for the player's inventory
+            // Tell server to create an instance of it for the player's inventory
             sendAjax('POST', '/makeTreasure', {
                 _csrf: this.state._csrf,
                 name: this.state.hasTreasure.name,
@@ -58,6 +57,9 @@ var GridTile = function (_React$Component) {
     }, {
         key: 'render',
         value: function render() {
+            if (this.state.hasTreasure == '') {
+                return null;
+            }
             return React.createElement(
                 'div',
                 { className: 'gridTile row content-justify-center', onClick: this.handleClick },
@@ -85,15 +87,15 @@ var GridTile = function (_React$Component) {
 
 ;
 
-// A traversable collection of grid tiles
-// for each tile on the grid. Default value is passed into the props of each tile
+// A list of treasures
+// for each item  on the grid. Default value is passed into the props of each tile
 var Grid = function Grid(props) {
     return React.createElement(
         'div',
         { className: 'gridContainer container' },
-        React.createElement(GridTile, { treasure: props.treasArray[0], csrf: props.csrf }),
-        React.createElement(GridTile, { treasure: props.treasArray[1], csrf: props.csrf }),
-        React.createElement(GridTile, { treasure: props.treasArray[2], csrf: props.csrf })
+        props.treasArray.map(function (treasure, key) {
+            return React.createElement(GridTile, { key: key, treasure: treasure, csrf: props.csrf });
+        })
     );
 };
 
@@ -139,57 +141,107 @@ var Inventory = function Inventory(props) {
     );
 };
 
+var Timer = function (_React$Component2) {
+    _inherits(Timer, _React$Component2);
+
+    function Timer(props) {
+        _classCallCheck(this, Timer);
+
+        var _this2 = _possibleConstructorReturn(this, (Timer.__proto__ || Object.getPrototypeOf(Timer)).call(this, props));
+
+        _this2.state = {
+            time: ''
+        };
+
+        _this2.getTimer = _this2.getTimer.bind(_this2);
+        return _this2;
+    }
+
+    // Get the time from the server stored in the user's account
+
+
+    _createClass(Timer, [{
+        key: 'getTimer',
+        value: function getTimer() {
+            var _this3 = this;
+
+            sendAjax('GET', '/collectionTimer', {}, function (data) {
+                _this3.setState({ time: data });
+                console.log("time received");
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            this.getTimer();
+            return React.createElement(
+                'div',
+                { className: 'timerContainer container' },
+                React.createElement(
+                    'h4',
+                    { className: 'text-center' },
+                    'Come back at ',
+                    React.createElement(
+                        'b',
+                        null,
+                        this.state.time
+                    ),
+                    ' for more treasures!'
+                )
+            );
+        }
+    }]);
+
+    return Timer;
+}(React.Component);
+
+;
+
 var loadInventoryFromServer = function loadInventoryFromServer() {
     sendAjax('GET', '/getTreasure', null, function (data) {
         ReactDOM.render(React.createElement(Inventory, { items: data.treasure }), document.querySelector("#inventory"));
     });
 };
 
-// check to see if items are in inventory - remove them if so
+// check to see if items are in inventory
 var checkInventory = function checkInventory(treasArray, csrfToken) {
-    sendAjax('GET', '/getTreasure', null, function (data) {
+    /* sendAjax('GET', '/getTreasure', null, (data) => {
         // get the name key values for both data sets to compare
-        var getDataNames = function getDataNames(collection) {
-            var names = [];
-            for (var i = 0; i < collection.length; i++) {
+        const getDataNames = (collection) => {
+            const names = [];
+            for (let i = 0; i < collection.length; i++){
                 names.push(collection[i].name);
             }
             return names;
         };
-
-        var serverNames = getDataNames(data.treasure);
-        var clientNames = getDataNames(treasArray);
-
-        for (var i = 0; i < treasArray.length; i++) {
-            if (serverNames.includes(clientNames[i])) {
+          const serverNames = getDataNames(data.treasure);
+        const clientNames = getDataNames(treasArray);
+          for(let i = 0; i < treasArray.length; i++){
+            if(serverNames.includes(clientNames[i])){
                 treasArray[clientNames.indexOf(clientNames[i])] = '';
             }
         }
-
-        render(csrfToken, treasArray);
-    });
+          render(csrfToken, treasArray);
+    }); */
+    render(csrfToken, treasArray);
 };
 
 // render the react components
 var render = function render(csrfToken, treasArray) {
     ReactDOM.render(React.createElement(Grid, { csrf: csrfToken, treasArray: treasArray }), document.querySelector('#app'));
+    ReactDOM.render(React.createElement(Timer, null), document.querySelector('#timer'));
     ReactDOM.render(React.createElement(Inventory, { items: [] }), document.querySelector("#inventory"));
 
     loadInventoryFromServer();
 };
 
-// The chance of treasure is procedurally generated in an array with corresponding indicies
 var generateTreasure = function generateTreasure(csrfToken) {
-    // Contains the names of treasure in a given grid tile
-    var treasArray = ['', '', '', '', '', '', '', '', ''];
+    // Contains the names of treasure
+    var treasArray = [];
 
     // get random treasures and put them on the grid
     for (var i = 0; i < getNumTreasures(); i++) {
-        var index = getRandomInt(8);
-        console.log(treasArray[index]);
-        if (treasArray[index] == '') {
-            treasArray[index] = getRandomTreasure();
-        }
+        treasArray.push(getRandomTreasure());
     }
     checkInventory(treasArray, csrfToken);
 };
@@ -229,7 +281,7 @@ var getRandomInt = function getRandomInt(max) {
 };
 
 var getNumTreasures = function getNumTreasures() {
-    var num = getRandomInt(7);
+    var num = getRandomInt(3);
     if (num === 0) num = 1;
     return num;
 };

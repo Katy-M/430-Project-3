@@ -273,7 +273,7 @@ var getRandomInt = function getRandomInt(max) {
 };
 
 var getNumTreasures = function getNumTreasures() {
-    var num = getRandomInt(7);
+    var num = getRandomInt(3);
     if (num === 0) num = 1;
     return num;
 };

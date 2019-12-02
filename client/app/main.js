@@ -7,8 +7,7 @@ class GridTile extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            hasTreasure: props.treasure, // stores the NAME of the treasure on the tile. Empty == ""
-            // hasPlayer: props.hasPlayer
+            hasTreasure: props.treasure, // stores the NAME of the treasure
             _csrf: props.csrf,
         };
 
@@ -23,7 +22,7 @@ class GridTile extends React.Component {
             return false;
         }
 
-        // if there is treasure, tell server to create an instance of it for the player's inventory
+        // Tell server to create an instance of it for the player's inventory
         sendAjax(
             'POST',
             '/makeTreasure',
@@ -43,6 +42,9 @@ class GridTile extends React.Component {
     };
 
     render() {
+        if (this.state.hasTreasure == '') {
+            return null;
+        }
         return (
             <div className="gridTile row content-justify-center" onClick={this.handleClick}>
                 <div className="icon col-lg-2 col-md-2 col-sm-2 col-2">icon</div>
@@ -53,14 +55,14 @@ class GridTile extends React.Component {
     }
 };
 
-// A traversable collection of grid tiles
-// for each tile on the grid. Default value is passed into the props of each tile
+// A list of treasures
+// for each item  on the grid. Default value is passed into the props of each tile
 const Grid = (props) => {
     return(
         <div className="gridContainer container">
-            <GridTile treasure={props.treasArray[0]} csrf={props.csrf} />
-            <GridTile treasure={props.treasArray[1]} csrf={props.csrf} />
-            <GridTile treasure={props.treasArray[2]} csrf={props.csrf} />
+            {props.treasArray.map((treasure, key) => {
+                return <GridTile key={key} treasure={treasure} csrf={props.csrf} />
+            })}
         </div>
     );
 };
@@ -91,6 +93,38 @@ const Inventory = (props) => {
     );
 };
 
+class Timer extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            time: '',
+        };
+
+        this.getTimer = this.getTimer.bind(this);
+    }
+
+    // Get the time from the server stored in the user's account
+    getTimer() {
+        sendAjax(
+            'GET', '/collectionTimer', {}, (data)=> {
+                this.setState({time: data});
+                console.log("time received");
+            }
+        );
+    };
+
+    render() {
+        this.getTimer();
+        return(
+            <div className="timerContainer container">
+                <h4 className="text-center">
+                    Come back at <b>{this.state.time}</b> for more treasures!
+                </h4>
+            </div>
+        );
+    };
+};
+
 const loadInventoryFromServer = () => {
     sendAjax('GET', '/getTreasure', null, (data) => {
         ReactDOM.render(
@@ -99,9 +133,9 @@ const loadInventoryFromServer = () => {
     });
 };
 
-// check to see if items are in inventory - remove them if so
+// check to see if items are in inventory
 const checkInventory = (treasArray, csrfToken) => {
-    sendAjax('GET', '/getTreasure', null, (data) => {
+    /* sendAjax('GET', '/getTreasure', null, (data) => {
         // get the name key values for both data sets to compare
         const getDataNames = (collection) => {
             const names = [];
@@ -121,29 +155,26 @@ const checkInventory = (treasArray, csrfToken) => {
         }
 
         render(csrfToken, treasArray);
-    });
+    }); */
+    render(csrfToken, treasArray);
 };
 
 // render the react components
 const render = (csrfToken, treasArray) => {
     ReactDOM.render(<Grid csrf={csrfToken} treasArray={treasArray} />, document.querySelector('#app'));
+    ReactDOM.render(<Timer />, document.querySelector('#timer'))
     ReactDOM.render(<Inventory items={[]}/>, document.querySelector("#inventory"));
     
     loadInventoryFromServer();
 };
 
-// The chance of treasure is procedurally generated in an array with corresponding indicies
 const generateTreasure = (csrfToken) => {
-    // Contains the names of treasure in a given grid tile
-    let treasArray = ['', '', '', '', '', '', '', '', '',];
+    // Contains the names of treasure
+    let treasArray = [];
 
     // get random treasures and put them on the grid
     for(let i = 0; i < getNumTreasures(); i++){
-        const index = getRandomInt(8);
-        console.log(treasArray[index]);
-        if(treasArray[index] == ''){
-            treasArray[index] = getRandomTreasure();
-        }
+        treasArray.push(getRandomTreasure());
     }
     checkInventory(treasArray, csrfToken)
 };

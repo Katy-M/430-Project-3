@@ -32,6 +32,9 @@ const AccountSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  nextTreasureSpawn: {
+    type: Date,
+  },
 });
 
 AccountSchema.statics.toAPI = doc => ({
@@ -59,7 +62,7 @@ AccountSchema.statics.findByUsername = (name, callback) => {
   return AccountModel.findOne(search, callback);
 };
 
-AccountSchema.statics.getLastLoginDate = (doc) => doc.lastLoginDate;
+AccountSchema.statics.getLoginDates = (doc) => doc;
 
 AccountSchema.statics.generateHash = (password, callback) => {
   const salt = crypto.randomBytes(saltLength);

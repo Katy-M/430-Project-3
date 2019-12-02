@@ -22,7 +22,7 @@ const getRandomInt = (max) => {
 };
 
 const getNumTreasures = () => {
-    let num = getRandomInt(7);
+    let num = getRandomInt(3);
     if(num === 0) num = 1;
     return num;
 };

@@ -2,6 +2,15 @@ const models = require('../models');
 
 const Account = models.account;
 
+// Get the player's last login time and display it as a collection timer
+const collectionTimer = (req, res) => {
+  if (!req.body) {
+    return res.status(400).json({ error: `Required information is missing body: ${req.body}` });
+  }
+  const times = Account.AccountModel.getLoginDates(req.body);
+  return times[0] - times[1];
+};
+
 const loginPage = (req, res) => {
   res.render('login', { csrfToken: req.csrfToken() });
 };
@@ -128,3 +137,4 @@ module.exports.logout = logout;
 module.exports.signup = signup;
 module.exports.getToken = getToken;
 module.exports.changePassword = changePassword;
+module.exports.collectionTimer = collectionTimer;
