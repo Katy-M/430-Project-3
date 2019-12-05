@@ -1,8 +1,6 @@
 // React components for handling the game client and window
 
-// A clickable div that may or may not contain treasure. Will later
-// contain the player and can be navigated to/from using buttons
-// Uses state to keep track of component state and change it dynamically
+// A clickable div that contains treasure
 class GridTile extends React.Component {
     constructor(props) {
         super(props);
