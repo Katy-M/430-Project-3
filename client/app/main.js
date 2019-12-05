@@ -110,7 +110,6 @@ class Timer extends React.Component {
             }
         );
     };
-
     render() {
         this.getTimer();
         return(
