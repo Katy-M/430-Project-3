@@ -11,9 +11,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 // React components for handling the game client and window
 
-// A clickable div that may or may not contain treasure. Will later
-// contain the player and can be navigated to/from using buttons
-// Uses state to keep track of component state and change it dynamically
+// A clickable div that contains treasure
 var GridTile = function (_React$Component) {
     _inherits(GridTile, _React$Component);
 
@@ -165,8 +163,9 @@ var Timer = function (_React$Component2) {
         value: function getTimer() {
             var _this3 = this;
 
+            console.log("client getting timer");
             sendAjax('GET', '/collectionTimer', {}, function (data) {
-                _this3.setState({ time: data });
+                _this3.setState({ time: data[0] - data[1] });
                 console.log("time received");
             });
         }

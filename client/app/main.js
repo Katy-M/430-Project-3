@@ -103,9 +103,10 @@ class Timer extends React.Component {
 
     // Get the time from the server stored in the user's account
     getTimer() {
+        console.log("client getting timer");
         sendAjax(
             'GET', '/collectionTimer', {}, (data)=> {
-                this.setState({time: data});
+                this.setState({time: data[0] - data[1]});
                 console.log("time received");
             }
         );

@@ -4,11 +4,27 @@ const Account = models.account;
 
 // Get the player's last login time and display it as a collection timer
 const collectionTimer = (req, res) => {
-  if (!req.body) {
-    return res.status(400).json({ error: `Required information is missing body: ${req.body}` });
+  if (!req.session.account.username) {
+    return res.status(400).json({ error: 'Missing username' });
   }
-  const times = Account.AccountModel.getLoginDates(req.body);
-  return times[0] - times[1];
+  // force cast to strings
+  /* const username = `${req.session.account.username}`;
+  console.log('server request');
+  const times = Account.AccountModel.getLoginDates(username, (err) => {
+    console.log('in server');
+    if (err) {
+      return res.status(500).json({ error: 'An internal server error occurred.' });
+    }
+  });
+  console.log(times);
+  return times;*/
+  /* return Account.AccountModel.getLoginDates(username, (err) => {
+    console.log("in server");
+    if (err) {
+      return res.status(500).json({ error: "An internal server error occurred." });
+    }
+  });*/
+  return false;
 };
 
 const loginPage = (req, res) => {

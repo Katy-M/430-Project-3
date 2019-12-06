@@ -31,9 +31,12 @@ const AccountSchema = new mongoose.Schema({
   lastLoginDate: {
     type: Date,
     default: Date.now,
+    required: true,
   },
   nextTreasureSpawn: {
     type: Date,
+    default: Date.now,
+    required: true,
   },
 });
 
@@ -41,6 +44,11 @@ AccountSchema.statics.toAPI = doc => ({
   // _id is built into your mongo document and is guaranteed to be unique
   username: doc.username,
   _id: doc._id,
+
+  lastLoginDate: Date.now(),
+  // Project 30 minutes into the future from when the user logged in or created an account
+  // https://stackoverflow.com/questions/1197928/how-to-add-30-minutes-to-a-javascript-date-object
+  nextTreasureSpawn: new Date(Date.now() + 30 * 60000),
 });
 
 const validatePassword = (doc, password, callback) => {
@@ -62,7 +70,15 @@ AccountSchema.statics.findByUsername = (name, callback) => {
   return AccountModel.findOne(search, callback);
 };
 
-AccountSchema.statics.getLoginDates = (doc) => doc;
+AccountSchema.statics.getLoginDates = (username, callback) => {
+  const account = AccountModel.findByUsername(username, (err, doc) => {
+    if (err || !doc) return callback(err);
+    return doc;
+  });
+  console.log(account.username);
+  // console.log(account.nextTreasureSpawn);
+  return [account.lastLoginDate, account.nextTreasureSpawn];
+};
 
 AccountSchema.statics.generateHash = (password, callback) => {
   const salt = crypto.randomBytes(saltLength);
