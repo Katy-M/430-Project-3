@@ -36,6 +36,11 @@ class GridTile extends React.Component {
         alert(`${this.state.hasTreasure.name} found and added to inventory!`)
         // remove treasure from the grid tile
         this.setState({hasTreasure: ''});
+
+        // Reset the collection timer in the player's account after the item is collected
+        sendAjax('POST', '/updateTimer', {}, ()=>{
+            console.log("in post");
+        });
         return false;
     };
 
@@ -103,7 +108,6 @@ class Timer extends React.Component {
 
     // Get the time from the server stored in the user's account
     getTimer() {
-        console.log("client getting timer");
         sendAjax(
             'GET', '/collectionTimer', {}, (data)=> {
                 this.setState({time: data[0] - data[1]});
@@ -111,6 +115,7 @@ class Timer extends React.Component {
             }
         );
     };
+
     render() {
         this.getTimer();
         return(
@@ -131,50 +136,33 @@ const loadInventoryFromServer = () => {
     });
 };
 
-// check to see if items are in inventory
-const checkInventory = (treasArray, csrfToken) => {
-    /* sendAjax('GET', '/getTreasure', null, (data) => {
-        // get the name key values for both data sets to compare
-        const getDataNames = (collection) => {
-            const names = [];
-            for (let i = 0; i < collection.length; i++){
-                names.push(collection[i].name);
-            }
-            return names;
-        };
-
-        const serverNames = getDataNames(data.treasure);
-        const clientNames = getDataNames(treasArray);
-
-        for(let i = 0; i < treasArray.length; i++){
-            if(serverNames.includes(clientNames[i])){
-                treasArray[clientNames.indexOf(clientNames[i])] = '';
-            }
-        }
-
-        render(csrfToken, treasArray);
-    }); */
-    render(csrfToken, treasArray);
-};
-
 // render the react components
 const render = (csrfToken, treasArray) => {
     ReactDOM.render(<Grid csrf={csrfToken} treasArray={treasArray} />, document.querySelector('#app'));
-    ReactDOM.render(<Timer />, document.querySelector('#timer'))
+    ReactDOM.render(<Timer />, document.querySelector('#timer'));
     ReactDOM.render(<Inventory items={[]}/>, document.querySelector("#inventory"));
     
     loadInventoryFromServer();
 };
 
 const generateTreasure = (csrfToken) => {
-    // Contains the names of treasure
-    let treasArray = [];
+    // check if enough time has passed for the user to generate treasure
+    sendAjax(
+        'GET',
+        '/collectionTimer',
+        {},
+        (data)=> {
+        if(data[0] >= data[1]) {
+            // Contains the names of treasure
+            let treasArray = [];
 
-    // get random treasures and put them on the grid
-    for(let i = 0; i < getNumTreasures(); i++){
-        treasArray.push(getRandomTreasure());
-    }
-    checkInventory(treasArray, csrfToken)
+            // get random treasures and put them on the grid
+            for(let i = 0; i < getNumTreasures(); i++){
+                treasArray.push(getRandomTreasure());
+            }
+            render(csrfToken, treasArray);
+        }
+    });
 };
 
 const getToken = () => {

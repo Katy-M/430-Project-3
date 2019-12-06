@@ -8,23 +8,26 @@ const collectionTimer = (req, res) => {
     return res.status(400).json({ error: 'Missing username' });
   }
   // force cast to strings
-  /* const username = `${req.session.account.username}`;
-  console.log('server request');
-  const times = Account.AccountModel.getLoginDates(username, (err) => {
-    console.log('in server');
+  const username = `${req.session.account.username}`;
+  return Account.AccountModel.getLoginDates(username, (err) => {
     if (err) {
       return res.status(500).json({ error: 'An internal server error occurred.' });
     }
   });
-  console.log(times);
-  return times;*/
-  /* return Account.AccountModel.getLoginDates(username, (err) => {
-    console.log("in server");
+};
+
+// Update the timer in the player's account based on when they've collected treasure
+const updateTimer = (req, res) => {
+  if (!req.session.account.username) {
+    return res.status(400).json({ error: 'Missing username' });
+  }
+  // force cast to strings
+  const username = `${req.session.account.username}`;
+  return Account.AccountModel.updateLoginDates(username, (err) => {
     if (err) {
-      return res.status(500).json({ error: "An internal server error occurred." });
+      return res.status(500).json({ error: 'An internal server error occurred.' });
     }
-  });*/
-  return false;
+  });
 };
 
 const loginPage = (req, res) => {
@@ -81,6 +84,7 @@ const signup = (request, response) => {
       username: req.body.username,
       salt,
       password: hash,
+      lastLoginDate: Date.now,
     };
 
     const newAccount = new Account.AccountModel(accountData);
@@ -154,3 +158,4 @@ module.exports.signup = signup;
 module.exports.getToken = getToken;
 module.exports.changePassword = changePassword;
 module.exports.collectionTimer = collectionTimer;
+module.exports.updateTimer = updateTimer;

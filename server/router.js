@@ -19,6 +19,7 @@ const router = (app) => {
     controllers.Account.changePassword
   );
   app.get('/collectionTimer', mid.requiresLogin, controllers.Account.collectionTimer);
+  app.post('/updateTimer', mid.requiresLogin, controllers.Account.updateTimer);
 };
 
 module.exports = router;

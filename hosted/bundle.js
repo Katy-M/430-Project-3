@@ -50,6 +50,11 @@ var GridTile = function (_React$Component) {
             alert(this.state.hasTreasure.name + ' found and added to inventory!');
             // remove treasure from the grid tile
             this.setState({ hasTreasure: '' });
+
+            // Reset the collection timer in the player's account after the item is collected
+            sendAjax('POST', '/updateTimer', {}, function () {
+                console.log("in post");
+            });
             return false;
         }
     }, {
@@ -163,7 +168,6 @@ var Timer = function (_React$Component2) {
         value: function getTimer() {
             var _this3 = this;
 
-            console.log("client getting timer");
             sendAjax('GET', '/collectionTimer', {}, function (data) {
                 _this3.setState({ time: data[0] - data[1] });
                 console.log("time received");
@@ -202,29 +206,6 @@ var loadInventoryFromServer = function loadInventoryFromServer() {
     });
 };
 
-// check to see if items are in inventory
-var checkInventory = function checkInventory(treasArray, csrfToken) {
-    /* sendAjax('GET', '/getTreasure', null, (data) => {
-        // get the name key values for both data sets to compare
-        const getDataNames = (collection) => {
-            const names = [];
-            for (let i = 0; i < collection.length; i++){
-                names.push(collection[i].name);
-            }
-            return names;
-        };
-          const serverNames = getDataNames(data.treasure);
-        const clientNames = getDataNames(treasArray);
-          for(let i = 0; i < treasArray.length; i++){
-            if(serverNames.includes(clientNames[i])){
-                treasArray[clientNames.indexOf(clientNames[i])] = '';
-            }
-        }
-          render(csrfToken, treasArray);
-    }); */
-    render(csrfToken, treasArray);
-};
-
 // render the react components
 var render = function render(csrfToken, treasArray) {
     ReactDOM.render(React.createElement(Grid, { csrf: csrfToken, treasArray: treasArray }), document.querySelector('#app'));
@@ -235,14 +216,19 @@ var render = function render(csrfToken, treasArray) {
 };
 
 var generateTreasure = function generateTreasure(csrfToken) {
-    // Contains the names of treasure
-    var treasArray = [];
+    // check if enough time has passed for the user to generate treasure
+    sendAjax('GET', '/collectionTimer', {}, function (data) {
+        if (data[0] >= data[1]) {
+            // Contains the names of treasure
+            var treasArray = [];
 
-    // get random treasures and put them on the grid
-    for (var i = 0; i < getNumTreasures(); i++) {
-        treasArray.push(getRandomTreasure());
-    }
-    checkInventory(treasArray, csrfToken);
+            // get random treasures and put them on the grid
+            for (var i = 0; i < getNumTreasures(); i++) {
+                treasArray.push(getRandomTreasure());
+            }
+            render(csrfToken, treasArray);
+        }
+    });
 };
 
 var getToken = function getToken() {
