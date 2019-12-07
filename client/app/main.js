@@ -38,7 +38,7 @@ class GridTile extends React.Component {
         
                 // Reset the collection timer in the player's account after the item is collected
                 sendAjax('POST', '/updateTimer', {}, ()=>{
-                    render(this.state._csrf, []);
+                    console.log("updating timer");
                 });
             }
         );
