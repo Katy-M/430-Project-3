@@ -65,25 +65,32 @@ AccountSchema.statics.findByUsername = (name, callback) => {
 };
 
 // retrieve the spawn times from the server
-AccountSchema.statics.getLoginDates = (username, callback) => {
-  const account = AccountModel.findByUsername(username, (err) => {
-    if (err) return callback(err);
-  });
-  return [account.lastLoginDate, account.nextTreasureSpawn];
-};
+AccountSchema.statics.getLoginDates = (
+  username,
+  callback
+) => AccountModel.findByUsername(username, (err, account) => {
+  if (err || !account) return callback(err);
+  return callback(
+    0,
+    [account.lastLoginDate, account.nextTreasureSpawn]
+  );
+});
 
 // update the spawn times in the given user's account
-AccountSchema.statics.updateLoginDates = (username, callback) => {
-  const account = AccountModel.findByUsername(username, (err) => {
-    if (err) return callback(err);
-  });
+AccountSchema.statics.updateLoginDates = (
+  username,
+  callback
+) => AccountModel.findByUsername(username, (err, docs) => {
+  if (err || !docs) return callback(err);
+
+  const account = docs;
   console.log(`USERNAME: ${account.username}`);
   account.lastLoginDate = Date.now();
-  // Project 30 minutes into the future from when the user logged in or created an account
+  // Project x number of minutes into the future from when the user logged in or created an account
   // https://stackoverflow.com/questions/1197928/how-to-add-30-minutes-to-a-javascript-date-object
-  account.nextTreasureSpawn = new Date(Date.now() + 30 * 60000);
-  return callback();
-};
+  account.nextTreasureSpawn = new Date(Date.now() + 2 * 60000);
+  return callback(0, { data: [account.lastLoginDate, account.nextTreasureSpawn] });
+});
 
 AccountSchema.statics.generateHash = (password, callback) => {
   const salt = crypto.randomBytes(saltLength);

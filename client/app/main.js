@@ -1,3 +1,4 @@
+
 // React components for handling the game client and window
 
 // A clickable div that contains treasure
@@ -31,16 +32,16 @@ class GridTile extends React.Component {
             },
             ()=> {
                 loadInventoryFromServer();
+                alert(`${this.state.hasTreasure.name} found and added to inventory!`)
+                // remove treasure from the grid tile
+                this.setState({hasTreasure: ''});
+        
+                // Reset the collection timer in the player's account after the item is collected
+                sendAjax('POST', '/updateTimer', {}, ()=>{
+                    render(this.state._csrf, []);
+                });
             }
         );
-        alert(`${this.state.hasTreasure.name} found and added to inventory!`)
-        // remove treasure from the grid tile
-        this.setState({hasTreasure: ''});
-
-        // Reset the collection timer in the player's account after the item is collected
-        sendAjax('POST', '/updateTimer', {}, ()=>{
-            console.log("in post");
-        });
         return false;
     };
 
@@ -110,8 +111,8 @@ class Timer extends React.Component {
     getTimer() {
         sendAjax(
             'GET', '/collectionTimer', {}, (data)=> {
-                this.setState({time: data[0] - data[1]});
-                console.log("time received");
+                let next = new Date(data.times[1]);
+                this.setState({time: next.toString()});
             }
         );
     };
@@ -146,22 +147,21 @@ const render = (csrfToken, treasArray) => {
 };
 
 const generateTreasure = (csrfToken) => {
+    let treasArray = [];
     // check if enough time has passed for the user to generate treasure
     sendAjax(
         'GET',
         '/collectionTimer',
         {},
         (data)=> {
-        if(data[0] >= data[1]) {
-            // Contains the names of treasure
-            let treasArray = [];
-
+            let next = new Date(data.times[1]).getTime();
+        if(Date.now() >= next) {
             // get random treasures and put them on the grid
             for(let i = 0; i < getNumTreasures(); i++){
                 treasArray.push(getRandomTreasure());
             }
-            render(csrfToken, treasArray);
         }
+    render(csrfToken, treasArray);
     });
 };
 

@@ -32,6 +32,8 @@ var GridTile = function (_React$Component) {
     _createClass(GridTile, [{
         key: 'handleClick',
         value: function handleClick(e) {
+            var _this2 = this;
+
             e.preventDefault();
 
             if (this.state.hasTreasure == '') {
@@ -46,14 +48,14 @@ var GridTile = function (_React$Component) {
                 value: this.state.hasTreasure.value
             }, function () {
                 loadInventoryFromServer();
-            });
-            alert(this.state.hasTreasure.name + ' found and added to inventory!');
-            // remove treasure from the grid tile
-            this.setState({ hasTreasure: '' });
+                alert(_this2.state.hasTreasure.name + ' found and added to inventory!');
+                // remove treasure from the grid tile
+                _this2.setState({ hasTreasure: '' });
 
-            // Reset the collection timer in the player's account after the item is collected
-            sendAjax('POST', '/updateTimer', {}, function () {
-                console.log("in post");
+                // Reset the collection timer in the player's account after the item is collected
+                sendAjax('POST', '/updateTimer', {}, function () {
+                    render(_this2.state._csrf, []);
+                });
             });
             return false;
         }
@@ -150,14 +152,14 @@ var Timer = function (_React$Component2) {
     function Timer(props) {
         _classCallCheck(this, Timer);
 
-        var _this2 = _possibleConstructorReturn(this, (Timer.__proto__ || Object.getPrototypeOf(Timer)).call(this, props));
+        var _this3 = _possibleConstructorReturn(this, (Timer.__proto__ || Object.getPrototypeOf(Timer)).call(this, props));
 
-        _this2.state = {
+        _this3.state = {
             time: ''
         };
 
-        _this2.getTimer = _this2.getTimer.bind(_this2);
-        return _this2;
+        _this3.getTimer = _this3.getTimer.bind(_this3);
+        return _this3;
     }
 
     // Get the time from the server stored in the user's account
@@ -166,11 +168,11 @@ var Timer = function (_React$Component2) {
     _createClass(Timer, [{
         key: 'getTimer',
         value: function getTimer() {
-            var _this3 = this;
+            var _this4 = this;
 
             sendAjax('GET', '/collectionTimer', {}, function (data) {
-                _this3.setState({ time: data[0] - data[1] });
-                console.log("time received");
+                var next = new Date(data.times[1]);
+                _this4.setState({ time: next.toString() });
             });
         }
     }, {
@@ -216,18 +218,17 @@ var render = function render(csrfToken, treasArray) {
 };
 
 var generateTreasure = function generateTreasure(csrfToken) {
+    var treasArray = [];
     // check if enough time has passed for the user to generate treasure
     sendAjax('GET', '/collectionTimer', {}, function (data) {
-        if (data[0] >= data[1]) {
-            // Contains the names of treasure
-            var treasArray = [];
-
+        var next = new Date(data.times[1]).getTime();
+        if (Date.now() >= next) {
             // get random treasures and put them on the grid
             for (var i = 0; i < getNumTreasures(); i++) {
                 treasArray.push(getRandomTreasure());
             }
-            render(csrfToken, treasArray);
         }
+        render(csrfToken, treasArray);
     });
 };
 
