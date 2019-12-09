@@ -7,24 +7,29 @@ const collectionTimer = (req, res) => {
   if (!req.session.account.username) {
     return res.status(400).json({ error: 'Missing username' });
   }
-  // force cast to strings
-  /* const username = `${req.session.account.username}`;
-  console.log('server request');
-  const times = Account.AccountModel.getLoginDates(username, (err) => {
-    console.log('in server');
-    if (err) {
-      return res.status(500).json({ error: 'An internal server error occurred.' });
+  // force cast to string
+  const username = `${req.session.account.username}`;
+  return Account.AccountModel.getLoginDates(username, (err, docs) => {
+    if (err || !docs) {
+      return res.status(500).json({ error: `An internal server error occurred: ${err}` });
     }
+    return res.json({ times: docs });
   });
-  console.log(times);
-  return times;*/
-  /* return Account.AccountModel.getLoginDates(username, (err) => {
-    console.log("in server");
-    if (err) {
-      return res.status(500).json({ error: "An internal server error occurred." });
+};
+
+// Update the timer in the player's account based on when they've collected treasure
+const updateTimer = (req, res) => {
+  if (!req.session.account.req.session.account.username) {
+    return res.status(400).json({ error: 'Missing username' });
+  }
+  // force cast to string
+  const username = `${req.session.account.username}`;
+  return Account.AccountModel.updateLoginDates(username, (err, docs) => {
+    if (err || !docs) {
+      return res.status(500).json({ error: `An internal server error occurred: ${err}` });
     }
-  });*/
-  return false;
+    return res.json({ data: docs });
+  });
 };
 
 const loginPage = (req, res) => {
@@ -81,6 +86,7 @@ const signup = (request, response) => {
       username: req.body.username,
       salt,
       password: hash,
+      lastLoginDate: new Date,
     };
 
     const newAccount = new Account.AccountModel(accountData);
@@ -154,3 +160,4 @@ module.exports.signup = signup;
 module.exports.getToken = getToken;
 module.exports.changePassword = changePassword;
 module.exports.collectionTimer = collectionTimer;
+module.exports.updateTimer = updateTimer;

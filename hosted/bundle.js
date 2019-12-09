@@ -32,6 +32,8 @@ var GridTile = function (_React$Component) {
     _createClass(GridTile, [{
         key: 'handleClick',
         value: function handleClick(e) {
+            var _this2 = this;
+
             e.preventDefault();
 
             if (this.state.hasTreasure == '') {
@@ -46,10 +48,15 @@ var GridTile = function (_React$Component) {
                 value: this.state.hasTreasure.value
             }, function () {
                 loadInventoryFromServer();
+                alert(_this2.state.hasTreasure.name + ' found and added to inventory!');
+                // remove treasure from the grid tile
+                _this2.setState({ hasTreasure: '' });
+
+                // Reset the collection timer in the player's account after the item is collected
+                sendAjax('POST', '/updateTimer', {}, function () {
+                    console.log("updating timer");
+                });
             });
-            alert(this.state.hasTreasure.name + ' found and added to inventory!');
-            // remove treasure from the grid tile
-            this.setState({ hasTreasure: '' });
             return false;
         }
     }, {
@@ -60,11 +67,11 @@ var GridTile = function (_React$Component) {
             }
             return React.createElement(
                 'div',
-                { className: 'gridTile row content-justify-center', onClick: this.handleClick },
+                { className: 'gridTile row ', onClick: this.handleClick },
                 React.createElement(
                     'div',
-                    { className: 'icon col-lg-2 col-md-2 col-sm-2 col-2' },
-                    'icon'
+                    { className: 'icon align-self-center col-lg-2 col-md-2 col-sm-2 col-2' },
+                    React.createElement('img', { className: 'img-fluid', src: this.state.hasTreasure.iconSrc })
                 ),
                 React.createElement(
                     'div',
@@ -145,14 +152,14 @@ var Timer = function (_React$Component2) {
     function Timer(props) {
         _classCallCheck(this, Timer);
 
-        var _this2 = _possibleConstructorReturn(this, (Timer.__proto__ || Object.getPrototypeOf(Timer)).call(this, props));
+        var _this3 = _possibleConstructorReturn(this, (Timer.__proto__ || Object.getPrototypeOf(Timer)).call(this, props));
 
-        _this2.state = {
+        _this3.state = {
             time: ''
         };
 
-        _this2.getTimer = _this2.getTimer.bind(_this2);
-        return _this2;
+        _this3.getTimer = _this3.getTimer.bind(_this3);
+        return _this3;
     }
 
     // Get the time from the server stored in the user's account
@@ -161,12 +168,11 @@ var Timer = function (_React$Component2) {
     _createClass(Timer, [{
         key: 'getTimer',
         value: function getTimer() {
-            var _this3 = this;
+            var _this4 = this;
 
-            console.log("client getting timer");
             sendAjax('GET', '/collectionTimer', {}, function (data) {
-                _this3.setState({ time: data[0] - data[1] });
-                console.log("time received");
+                var next = new Date(data.times[1]);
+                _this4.setState({ time: next.toString() });
             });
         }
     }, {
@@ -202,29 +208,6 @@ var loadInventoryFromServer = function loadInventoryFromServer() {
     });
 };
 
-// check to see if items are in inventory
-var checkInventory = function checkInventory(treasArray, csrfToken) {
-    /* sendAjax('GET', '/getTreasure', null, (data) => {
-        // get the name key values for both data sets to compare
-        const getDataNames = (collection) => {
-            const names = [];
-            for (let i = 0; i < collection.length; i++){
-                names.push(collection[i].name);
-            }
-            return names;
-        };
-          const serverNames = getDataNames(data.treasure);
-        const clientNames = getDataNames(treasArray);
-          for(let i = 0; i < treasArray.length; i++){
-            if(serverNames.includes(clientNames[i])){
-                treasArray[clientNames.indexOf(clientNames[i])] = '';
-            }
-        }
-          render(csrfToken, treasArray);
-    }); */
-    render(csrfToken, treasArray);
-};
-
 // render the react components
 var render = function render(csrfToken, treasArray) {
     ReactDOM.render(React.createElement(Grid, { csrf: csrfToken, treasArray: treasArray }), document.querySelector('#app'));
@@ -235,14 +218,18 @@ var render = function render(csrfToken, treasArray) {
 };
 
 var generateTreasure = function generateTreasure(csrfToken) {
-    // Contains the names of treasure
     var treasArray = [];
-
-    // get random treasures and put them on the grid
-    for (var i = 0; i < getNumTreasures(); i++) {
-        treasArray.push(getRandomTreasure());
-    }
-    checkInventory(treasArray, csrfToken);
+    // check if enough time has passed for the user to generate treasure
+    sendAjax('GET', '/collectionTimer', {}, function (data) {
+        var next = new Date(data.times[1]).getTime();
+        if (Date.now() >= next) {
+            // get random treasures and put them on the grid
+            for (var i = 0; i < getNumTreasures(); i++) {
+                treasArray.push(getRandomTreasure());
+            }
+        }
+        render(csrfToken, treasArray);
+    });
 };
 
 var getToken = function getToken() {
@@ -285,6 +272,11 @@ var getNumTreasures = function getNumTreasures() {
     return num;
 };
 
+// Image citations:
+// Sword: https://www.needpix.com/photo/178370/sword-medieval-weapon-metal
+// Coins: https://pixabay.com/vectors/coins-money-profit-wealth-161724/
+// Eyeball: https://pixabay.com/vectors/alligator-crocodile-eye-green-160769/
+
 var getRandomTreasure = function getRandomTreasure() {
     // 4 types of treasure
     var id = getRandomInt(5);
@@ -294,19 +286,19 @@ var getRandomTreasure = function getRandomTreasure() {
             treasure = { name: 'Silver Platter', value: '500' };
             break;
         case 1:
-            treasure = { name: 'Gold Coins', value: '50' };
+            treasure = { iconSrc: '/assets/img/coins.png', name: 'Gold Coins', value: '50' };
             break;
         case 2:
-            treasure = { name: 'Eye of Newt', value: '200' };
+            treasure = { iconSrc: '/assets/img/eye.png', name: 'Eye of Newt', value: '200' };
             break;
         case 3:
-            treasure = { name: 'Serpent Tail', value: '830' };
+            treasure = { iconSrc: '', name: 'Serpent Tail', value: '830' };
             break;
         case 4:
-            treasure = { name: 'Iron Sword', value: '25' };
+            treasure = { iconSrc: '/assets/img/sword.png', name: 'Iron Sword', value: '25' };
             break;
         default:
-            treasure = { name: 'undefined', value: '0' };
+            treasure = { iconSrc: '', name: 'undefined', value: '0' };
     }
     return treasure;
 };

@@ -10,7 +10,6 @@ var handleLogin = function handleLogin(e) {
 
     console.log($("input[name=_csrf]").val());
     sendAjax('POST', $("#loginForm").attr("action"), $("#loginForm").serialize(), redirect);
-
     return false;
 };
 
@@ -36,7 +35,6 @@ var handlePasswordChange = function handlePasswordChange(e) {
     }
 
     sendAjax('POST', $("#changePassword").attr("action"), $("#changePassword").serialize(), redirect);
-
     return false;
 };
 
@@ -287,19 +285,19 @@ var getRandomTreasure = function getRandomTreasure() {
             treasure = { name: 'Silver Platter', value: '500' };
             break;
         case 1:
-            treasure = { name: 'Gold Coins', value: '50' };
+            treasure = { iconSrc: '/assets/img/coins.png', name: 'Gold Coins', value: '50' };
             break;
         case 2:
-            treasure = { name: 'Eye of Newt', value: '200' };
+            treasure = { iconSrc: '', name: 'Eye of Newt', value: '200' };
             break;
         case 3:
-            treasure = { name: 'Serpent Tail', value: '830' };
+            treasure = { iconSrc: '', name: 'Serpent Tail', value: '830' };
             break;
         case 4:
-            treasure = { name: 'Iron Sword', value: '25' };
+            treasure = { iconSrc: '/assets/img/sword.png', name: 'Iron Sword', value: '25' };
             break;
         default:
-            treasure = { name: 'undefined', value: '0' };
+            treasure = { iconSrc: '', name: 'undefined', value: '0' };
     }
     return treasure;
 };
