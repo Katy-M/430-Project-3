@@ -50,8 +50,10 @@ class GridTile extends React.Component {
             return null;
         }
         return (
-            <div className="gridTile row content-justify-center" onClick={this.handleClick}>
-                <div className="icon col-lg-2 col-md-2 col-sm-2 col-2">icon</div>
+            <div className="gridTile row " onClick={this.handleClick}>
+                <div className="icon align-self-center col-lg-2 col-md-2 col-sm-2 col-2">
+                    <img className="img-fluid" src={this.state.hasTreasure.iconSrc} />
+                </div>
                 <div className="label col-lg-8 col-md-8 col-sm-8 col-8">{this.state.hasTreasure.name}</div>
                 <div className="value col-lg-2 col-md-2 col-sm-2 col-2">{this.state.hasTreasure.value}</div>
             </div>

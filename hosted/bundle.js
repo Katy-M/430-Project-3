@@ -54,7 +54,7 @@ var GridTile = function (_React$Component) {
 
                 // Reset the collection timer in the player's account after the item is collected
                 sendAjax('POST', '/updateTimer', {}, function () {
-                    render(_this2.state._csrf, []);
+                    console.log("updating timer");
                 });
             });
             return false;
@@ -67,11 +67,11 @@ var GridTile = function (_React$Component) {
             }
             return React.createElement(
                 'div',
-                { className: 'gridTile row content-justify-center', onClick: this.handleClick },
+                { className: 'gridTile row ', onClick: this.handleClick },
                 React.createElement(
                     'div',
-                    { className: 'icon col-lg-2 col-md-2 col-sm-2 col-2' },
-                    'icon'
+                    { className: 'icon align-self-center col-lg-2 col-md-2 col-sm-2 col-2' },
+                    React.createElement('img', { className: 'img-fluid', src: this.state.hasTreasure.iconSrc })
                 ),
                 React.createElement(
                     'div',
@@ -272,6 +272,11 @@ var getNumTreasures = function getNumTreasures() {
     return num;
 };
 
+// Image citations:
+// Sword: https://www.needpix.com/photo/178370/sword-medieval-weapon-metal
+// Coins: https://pixabay.com/vectors/coins-money-profit-wealth-161724/
+// Eyeball: https://pixabay.com/vectors/alligator-crocodile-eye-green-160769/
+
 var getRandomTreasure = function getRandomTreasure() {
     // 4 types of treasure
     var id = getRandomInt(5);
@@ -281,19 +286,19 @@ var getRandomTreasure = function getRandomTreasure() {
             treasure = { name: 'Silver Platter', value: '500' };
             break;
         case 1:
-            treasure = { name: 'Gold Coins', value: '50' };
+            treasure = { iconSrc: '/assets/img/coins.png', name: 'Gold Coins', value: '50' };
             break;
         case 2:
-            treasure = { name: 'Eye of Newt', value: '200' };
+            treasure = { iconSrc: '/assets/img/eye.png', name: 'Eye of Newt', value: '200' };
             break;
         case 3:
-            treasure = { name: 'Serpent Tail', value: '830' };
+            treasure = { iconSrc: '', name: 'Serpent Tail', value: '830' };
             break;
         case 4:
-            treasure = { name: 'Iron Sword', value: '25' };
+            treasure = { iconSrc: '/assets/img/sword.png', name: 'Iron Sword', value: '25' };
             break;
         default:
-            treasure = { name: 'undefined', value: '0' };
+            treasure = { iconSrc: '', name: 'undefined', value: '0' };
     }
     return treasure;
 };
