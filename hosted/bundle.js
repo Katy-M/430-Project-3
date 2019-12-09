@@ -1,4 +1,3 @@
-"use strict";
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -53,9 +52,7 @@ var GridTile = function (_React$Component) {
                 _this2.setState({ hasTreasure: '' });
 
                 // Reset the collection timer in the player's account after the item is collected
-                sendAjax('POST', '/updateTimer', {}, function () {
-                    console.log("updating timer");
-                });
+                sendAjax('POST', '/updateTimer', { _csrf: _this2.state._csrf }, function () {});
             });
             return false;
         }
@@ -276,6 +273,8 @@ var getNumTreasures = function getNumTreasures() {
 // Sword: https://www.needpix.com/photo/178370/sword-medieval-weapon-metal
 // Coins: https://pixabay.com/vectors/coins-money-profit-wealth-161724/
 // Eyeball: https://pixabay.com/vectors/alligator-crocodile-eye-green-160769/
+// Snake: https://www.needpix.com/photo/34931/head-snake-gray-cobra-raised-swirl-reptile-serpent-poisonous
+// Plate: https://pixabay.com/vectors/ceramic-china-crockery-dish-156155/
 
 var getRandomTreasure = function getRandomTreasure() {
     // 4 types of treasure
@@ -283,7 +282,7 @@ var getRandomTreasure = function getRandomTreasure() {
     var treasure = '';
     switch (id) {
         case 0:
-            treasure = { name: 'Silver Platter', value: '500' };
+            treasure = { iconSrc: '/assets/img/plate.png', name: 'Silver Platter', value: '500' };
             break;
         case 1:
             treasure = { iconSrc: '/assets/img/coins.png', name: 'Gold Coins', value: '50' };
@@ -292,7 +291,7 @@ var getRandomTreasure = function getRandomTreasure() {
             treasure = { iconSrc: '/assets/img/eye.png', name: 'Eye of Newt', value: '200' };
             break;
         case 3:
-            treasure = { iconSrc: '', name: 'Serpent Tail', value: '830' };
+            treasure = { iconSrc: '/assets/img/serpent.png', name: 'Serpent Tail', value: '830' };
             break;
         case 4:
             treasure = { iconSrc: '/assets/img/sword.png', name: 'Iron Sword', value: '25' };

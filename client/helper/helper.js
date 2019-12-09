@@ -31,6 +31,8 @@ const getNumTreasures = () => {
 // Sword: https://www.needpix.com/photo/178370/sword-medieval-weapon-metal
 // Coins: https://pixabay.com/vectors/coins-money-profit-wealth-161724/
 // Eyeball: https://pixabay.com/vectors/alligator-crocodile-eye-green-160769/
+// Snake: https://www.needpix.com/photo/34931/head-snake-gray-cobra-raised-swirl-reptile-serpent-poisonous
+// Plate: https://pixabay.com/vectors/ceramic-china-crockery-dish-156155/
 
 const getRandomTreasure = () => {
     // 4 types of treasure
@@ -38,7 +40,7 @@ const getRandomTreasure = () => {
     let treasure = '';
     switch (id) {
         case 0:
-            treasure = { name: 'Silver Platter', value: '500' };
+            treasure = { iconSrc: '/assets/img/plate.png', name: 'Silver Platter', value: '500' };
             break;
         case 1:
             treasure = { iconSrc: '/assets/img/coins.png', name: 'Gold Coins', value: '50' };
@@ -47,7 +49,7 @@ const getRandomTreasure = () => {
             treasure = { iconSrc: '/assets/img/eye.png', name: 'Eye of Newt', value: '200' };
             break;
         case 3:
-            treasure = { iconSrc: '', name: 'Serpent Tail', value: '830' };
+            treasure = { iconSrc: '/assets/img/serpent.png', name: 'Serpent Tail', value: '830' };
             break;
         case 4:
             treasure = { iconSrc: '/assets/img/sword.png', name: 'Iron Sword', value: '25' };

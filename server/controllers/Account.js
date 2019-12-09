@@ -19,7 +19,7 @@ const collectionTimer = (req, res) => {
 
 // Update the timer in the player's account based on when they've collected treasure
 const updateTimer = (req, res) => {
-  if (!req.session.account.req.session.account.username) {
+  if (!req.session.account.username) {
     return res.status(400).json({ error: 'Missing username' });
   }
   // force cast to string
