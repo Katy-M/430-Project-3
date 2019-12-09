@@ -88,9 +88,9 @@ AccountSchema.statics.updateLoginDates = (
   // Project x number of minutes into the future from when the user logged in or created an account
   // https://stackoverflow.com/questions/1197928/how-to-add-30-minutes-to-a-javascript-date-object
   account.nextTreasureSpawn = new Date(Date.now() + 2 * 60000);
-  return account.save().then(()=> {
-    return callback(0, { data: [account.lastLoginDate, account.nextTreasureSpawn] });
-  });
+  return account.save().then(() => callback(0,
+    { data: [account.lastLoginDate, account.nextTreasureSpawn] }
+  ));
 });
 
 AccountSchema.statics.generateHash = (password, callback) => {
